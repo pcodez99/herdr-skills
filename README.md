@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="assets/icon.png" width="144" height="144" alt="Three connected terminal panels">
+  <img src="assets/icon.png" width="144" height="144" alt="Orange and teal herding dog in profile">
 </p>
 
 <h1 align="center">Herdr Team</h1>
 
-<p align="center"><em>One plan. A team you can watch.</em></p>
+<p align="center"><em>One plan. A team you can control.</em></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Codex-desktop-171717?style=flat-square" alt="Codex desktop">

@@ -29,7 +29,7 @@ class Packages(unittest.TestCase):
                 manifest = json.loads(archive.read(manifest_path))
                 self.assertEqual(manifest["author"]["name"], "pcodez")
                 self.assertEqual(manifest["license"], "MIT")
-                self.assertEqual(manifest["version"], "0.6.0")
+                self.assertEqual(manifest["version"], "0.6.1")
                 icon = archive.read("assets/icon.png")
                 self.assertEqual(icon[:8], b"\x89PNG\r\n\x1a\n")
                 width, height = struct.unpack(">II", icon[16:24])

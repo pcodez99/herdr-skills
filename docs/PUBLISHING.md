@@ -4,7 +4,7 @@ The packages are prepared for local validation and submission. They are not
 approved directory listings. Publisher verification, portal checks, name
 availability, and live workflow testing remain separate steps.
 
-## Release 0.6.0
+## Release 0.6.1
 
 - Publisher: **pcodez**, with no personal email in package metadata.
 - Stable package name: `herdr`; display name: **Herdr Team**.

@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "herdr",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Plan, launch and review a team of agents in Herdr desktop, each in its own watchable tab.",
   "author": {
     "name": "pcodez",
@@ -30,7 +30,7 @@
         "defaultPrompt": "Use the herdr-team skill to plan this task with a team of agents in Herdr."
       },
       "publication": {
-        "release_notes": "0.6.0: MIT license, shared icon, self-contained Claude Code package, desktop-only Codex metadata, and publication instructions."
+        "release_notes": "New herding dog icon with a transparent background."
       }
     }
   }
