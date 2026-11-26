@@ -1,0 +1,6 @@
+{
+  "name": "herdr",
+  "version": "0.4.0",
+  "description": "Herdr desktop for agents: a session-start note, active only inside Herdr, that points to the herdr-team skill and the official CLI manuals. Ships no skills of its own.",
+  "hooks": "./hooks/hooks.json"
+}

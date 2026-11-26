@@ -1,0 +1,12 @@
+# Local copies of the official Herdr manuals
+skills/hc/
+skills/herdr-app/
+
+# Local configuration, credentials and working notes
+.DS_Store
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+temp/

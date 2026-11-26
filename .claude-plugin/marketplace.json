@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "herdr-skills",
+  "description": "Skills and session hook for working with agents in Herdr desktop.",
+  "owner": {
+    "name": "herdr-skills maintainers"
+  },
+  "plugins": [
+    {
+      "name": "herdr",
+      "description": "Session-start note inside Herdr pointing to the herdr-team skill and the official CLI manuals (hook only, no skills).",
+      "source": "./plugin",
+      "category": "productivity"
+    }
+  ]
+}
