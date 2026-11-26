@@ -10,3 +10,5 @@ skills/herdr-app/
 *.pem
 *.key
 temp/
+dist/
+__pycache__/

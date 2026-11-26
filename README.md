@@ -1,71 +1,92 @@
-# herdr-skills
+<p align="center">
+  <img src="assets/icon.png" width="144" height="144" alt="Three connected terminal panels">
+</p>
 
-Work with a team of agents in Herdr desktop: a master that
-plans, reviews and commits, plus at least one implementer, each in its own tab.
+<h1 align="center">Herdr Team</h1>
 
-- [`skills/herdr-team`](skills/herdr-team/SKILL.md): the skill.
-- `plugin.json`: the Codex plugin by **pcodez**, bundling the existing skill.
-- `.agents/plugins/marketplace.json`: the Codex marketplace.
-- `plugin/`: a Claude Code plugin with a single hook that points to the skill at
-  session start inside Herdr. It ships no skills, so each skill exists only once.
+<p align="center"><em>One plan. A team you can watch.</em></p>
 
-## Installation
+<p align="center">
+  <img src="https://img.shields.io/badge/Codex-desktop-171717?style=flat-square" alt="Codex desktop">
+  <img src="https://img.shields.io/badge/Claude_Code-supported-171717?style=flat-square" alt="Claude Code supported">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-171717?style=flat-square" alt="MIT license"></a>
+</p>
 
-Install Herdr desktop with the `hc` and `herdr-app` commands available on your PATH,
-and the agent CLI you intend to use (Claude Code or Codex). The commands below use a
-POSIX shell and Git.
+Your master agent plans and reviews. Implementers work in their own Herdr tabs.
+You see the work, approve the plan, and decide when it ships.
 
-```sh
-git clone https://github.com/pcodez99/herdr-skills.git
-cd herdr-skills
-```
+## Install
 
-### Codex plugin
+You need **Herdr desktop**, `hc` and `herdr-app` on your PATH, and an authenticated
+**Codex** or **Claude Code** CLI. Use a local session inside Herdr.
+
+### Codex
 
 ```sh
 codex plugin marketplace add pcodez99/herdr-skills
 codex plugin add herdr@herdr-skills
 ```
 
-Run `codex plugin list --marketplace herdr-skills` to check the installation.
-The plugin is named **Herdr**, its author is **pcodez**, and it includes the
-`herdr-team` skill. It does not install the Claude Code session-start hook.
-
-This repository marketplace is separate from the public OpenAI Plugins Directory;
-directory listing requires a separate submission and review.
+Check it with `codex plugin list --marketplace herdr-skills`.
 
 ### Claude Code
 
-Link the skill into Claude Code's skill directory:
+```sh
+claude plugin marketplace add pcodez99/herdr-skills
+claude plugin install herdr@herdr-skills
+```
+
+Check it with `claude plugin list`. Both plugins include the skill; no separate
+symlink is needed. Start a new session after installing.
+
+| What you get | Codex | Claude Code |
+| --- | --- | --- |
+| `herdr-team` skill | Yes | Yes |
+| Session-start reminder inside Herdr | — | Yes |
+| Local execution required | Yes | Yes |
+
+Updating from the older hook-only Claude plugin? Update the plugin, then remove
+your old `herdr-team` symlink after confirming it is a symlink. The plugin now
+includes the skill itself.
+
+<details>
+<summary>Prefer the skill without a plugin?</summary>
+
+Clone the repository and link the skill into your agent's skill directory:
 
 ```sh
+git clone https://github.com/pcodez99/herdr-skills.git
+cd herdr-skills
 mkdir -p "$HOME/.claude/skills"
 ln -s "$PWD/skills/herdr-team" "$HOME/.claude/skills/herdr-team"
 ```
 
-Keep the clone in place because the link points to it. If `herdr-team` already exists in the
-destination, check the existing installation before replacing it.
+For Codex, replace `.claude` with `.codex`. Keep the clone in place. Check an
+existing destination before replacing it, and choose either the plugin or the
+symlink to avoid loading the skill twice.
 
-Claude Code users can optionally install the session-start hook:
+</details>
 
-```sh
-claude plugin marketplace add "$PWD"
-claude plugin install herdr@herdr-skills
-```
+## Put the team to work
 
-The hook runs only inside Herdr and does not install the skill itself.
+> Use herdr-team to plan and implement this task with a team of agents in Herdr.
 
-### Skill only
+1. The master proposes a plan and a team sized to the task.
+2. You approve. Agents start in separate, visible tabs.
+3. The master reviews the changes and runs the checks.
+4. You authorize commits, pushes, and closing the team's tabs.
 
-To use Codex without the plugin, follow the symlink instructions above with
-`$HOME/.codex/skills` instead of `$HOME/.claude/skills`. Choose either the plugin
-or the symlink installation to avoid loading the skill twice.
+Agents use your existing provider accounts and permissions. Provider usage may
+incur costs. The package does not install Herdr or run in cloud-only chats.
+The official CLI manuals come from `hc --skill` and `herdr-app --skill`.
 
-`herdr-team` relies on the official `hc --skill` and `herdr-app --skill` manuals.
-Read them directly from the installed binaries; they belong to Herdr and are not tracked here.
+## Small package. Clear boundaries.
 
-## Usage
+- [The skill](skills/herdr-team/SKILL.md) — planning, ownership, gates, and handoffs.
+- [Troubleshooting](skills/herdr-team/TROUBLESHOOTING.md) — when an agent gets stuck.
+- [Publishing](docs/PUBLISHING.md) — checks, ZIPs, and directory submission steps.
+- [Privacy](PRIVACY.md) · [Support](https://github.com/pcodez99/herdr-skills/issues) · [MIT license](LICENSE).
 
-In an agent session inside Herdr, ask the agent to use `herdr-team` for a task.
-The skill plans the team and asks for approval before launching agents. Review the
-plan and the requested permissions; each agent uses your existing CLI account.
+By **[pcodez](https://github.com/pcodez99)**. An independent skill package for Herdr;
+not an official Herdr, OpenAI, or Anthropic product. Repository installation is
+available now; official directory listings require separate review and approval.

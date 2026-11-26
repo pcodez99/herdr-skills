@@ -1,15 +1,15 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "herdr-skills",
-  "description": "Skills and session hook for working with agents in Herdr desktop.",
+  "description": "Team workflows for Herdr desktop by pcodez.",
   "owner": {
     "name": "pcodez"
   },
   "plugins": [
     {
       "name": "herdr",
-      "description": "Session-start note inside Herdr pointing to the herdr-team skill and the official CLI manuals (hook only, no skills).",
-      "source": "./plugin",
+      "description": "Coordinate a visible team of agents in Herdr desktop. Includes the herdr-team skill and a session-start hook.",
+      "source": "./",
       "category": "productivity"
     }
   ]

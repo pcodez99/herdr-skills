@@ -1,0 +1,17 @@
+{
+  "name": "herdr",
+  "displayName": "Herdr Team",
+  "version": "0.6.0",
+  "author": {
+    "name": "pcodez",
+    "url": "https://github.com/pcodez99"
+  },
+  "repository": "https://github.com/pcodez99/herdr-skills",
+  "homepage": "https://github.com/pcodez99/herdr-skills#readme",
+  "description": "Coordinate a visible team of coding agents in Herdr desktop. Includes the herdr-team skill and a session-start hook active only inside Herdr. Requires Herdr and its local CLIs.",
+  "license": "MIT",
+  "icon": "./assets/icon.png",
+  "documentationUrl": "https://github.com/pcodez99/herdr-skills#readme",
+  "supportUrl": "https://github.com/pcodez99/herdr-skills/issues",
+  "privacyPolicyUrl": "https://github.com/pcodez99/herdr-skills/blob/main/PRIVACY.md"
+}

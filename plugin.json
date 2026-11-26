@@ -1,24 +1,36 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "herdr",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Plan, launch and review a team of agents in Herdr desktop, each in its own watchable tab.",
   "author": {
     "name": "pcodez",
     "url": "https://github.com/pcodez99"
   },
   "repository": "https://github.com/pcodez99/herdr-skills",
+  "homepage": "https://github.com/pcodez99/herdr-skills#readme",
+  "license": "MIT",
+  "keywords": ["herdr", "agents", "team", "coding"],
   "extensions": {
     "com.openai": {
+      "requires_local_executor": true,
       "interface": {
-        "displayName": "Herdr",
-        "shortDescription": "Work with a team of agents in Herdr desktop",
-        "longDescription": "A master plans and reviews while implementers work in separate Herdr tabs. Includes the herdr-team skill and instructions for coordinating agents with the official Herdr CLI manuals.",
+        "displayName": "Herdr Team",
+        "shortDescription": "Visible coding agent teams",
+        "longDescription": "Coordinate coding agents in Herdr desktop: a master plans and reviews while implementers work in separate visible tabs. For developers using local Claude Code or Codex sessions. Requires Herdr desktop, hc and herdr-app on PATH, and an authenticated agent CLI. Agents use the user's existing permissions and provider accounts. This independent skill package does not install Herdr, include an MCP server, or work in cloud-only chats.",
         "developerName": "pcodez",
         "category": "Productivity",
         "capabilities": ["Instructions"],
         "websiteURL": "https://github.com/pcodez99/herdr-skills",
+        "supportURL": "https://github.com/pcodez99/herdr-skills/issues",
+        "privacyPolicyURL": "https://github.com/pcodez99/herdr-skills/blob/main/PRIVACY.md",
+        "termsOfServiceURL": "https://github.com/pcodez99/herdr-skills/blob/main/LICENSE",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png",
         "defaultPrompt": "Use the herdr-team skill to plan this task with a team of agents in Herdr."
+      },
+      "publication": {
+        "release_notes": "0.6.0: MIT license, shared icon, self-contained Claude Code package, desktop-only Codex metadata, and publication instructions."
       }
     }
   }
