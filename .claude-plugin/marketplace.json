@@ -3,7 +3,7 @@
   "name": "herdr-skills",
   "description": "Skills and session hook for working with agents in Herdr desktop.",
   "owner": {
-    "name": "herdr-skills maintainers"
+    "name": "pcodez"
   },
   "plugins": [
     {

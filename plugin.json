@@ -1,0 +1,25 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "herdr",
+  "version": "0.5.0",
+  "description": "Plan, launch and review a team of agents in Herdr desktop, each in its own watchable tab.",
+  "author": {
+    "name": "pcodez",
+    "url": "https://github.com/pcodez99"
+  },
+  "repository": "https://github.com/pcodez99/herdr-skills",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Herdr",
+        "shortDescription": "Work with a team of agents in Herdr desktop",
+        "longDescription": "A master plans and reviews while implementers work in separate Herdr tabs. Includes the herdr-team skill and instructions for coordinating agents with the official Herdr CLI manuals.",
+        "developerName": "pcodez",
+        "category": "Productivity",
+        "capabilities": ["Instructions"],
+        "websiteURL": "https://github.com/pcodez99/herdr-skills",
+        "defaultPrompt": "Use the herdr-team skill to plan this task with a team of agents in Herdr."
+      }
+    }
+  }
+}

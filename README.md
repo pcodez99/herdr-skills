@@ -4,6 +4,8 @@ Work with a team of agents in Herdr desktop: a master that
 plans, reviews and commits, plus at least one implementer, each in its own tab.
 
 - [`skills/herdr-team`](skills/herdr-team/SKILL.md): the skill.
+- `plugin.json`: the Codex plugin by **pcodez**, bundling the existing skill.
+- `.agents/plugins/marketplace.json`: the Codex marketplace.
 - `plugin/`: a Claude Code plugin with a single hook that points to the skill at
   session start inside Herdr. It ships no skills, so each skill exists only once.
 
@@ -18,15 +20,30 @@ git clone https://github.com/pcodez99/herdr-skills.git
 cd herdr-skills
 ```
 
-Link the skill into your agent's skill directory. For Claude Code:
+### Codex plugin
+
+```sh
+codex plugin marketplace add pcodez99/herdr-skills
+codex plugin add herdr@herdr-skills
+```
+
+Run `codex plugin list --marketplace herdr-skills` to check the installation.
+The plugin is named **Herdr**, its author is **pcodez**, and it includes the
+`herdr-team` skill. It does not install the Claude Code session-start hook.
+
+This repository marketplace is separate from the public OpenAI Plugins Directory;
+directory listing requires a separate submission and review.
+
+### Claude Code
+
+Link the skill into Claude Code's skill directory:
 
 ```sh
 mkdir -p "$HOME/.claude/skills"
 ln -s "$PWD/skills/herdr-team" "$HOME/.claude/skills/herdr-team"
 ```
 
-For Codex, use `$HOME/.codex/skills` instead of `$HOME/.claude/skills`. Keep the
-clone in place because the link points to it. If `herdr-team` already exists in the
+Keep the clone in place because the link points to it. If `herdr-team` already exists in the
 destination, check the existing installation before replacing it.
 
 Claude Code users can optionally install the session-start hook:
@@ -37,6 +54,12 @@ claude plugin install herdr@herdr-skills
 ```
 
 The hook runs only inside Herdr and does not install the skill itself.
+
+### Skill only
+
+To use Codex without the plugin, follow the symlink instructions above with
+`$HOME/.codex/skills` instead of `$HOME/.claude/skills`. Choose either the plugin
+or the symlink installation to avoid loading the skill twice.
 
 `herdr-team` relies on the official `hc --skill` and `herdr-app --skill` manuals.
 Read them directly from the installed binaries; they belong to Herdr and are not tracked here.

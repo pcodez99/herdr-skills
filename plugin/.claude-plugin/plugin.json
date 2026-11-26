@@ -1,6 +1,11 @@
 {
   "name": "herdr",
-  "version": "0.4.0",
+  "version": "0.5.0",
+  "author": {
+    "name": "pcodez",
+    "url": "https://github.com/pcodez99"
+  },
+  "repository": "https://github.com/pcodez99/herdr-skills",
   "description": "Herdr desktop for agents: a session-start note, active only inside Herdr, that points to the herdr-team skill and the official CLI manuals. Ships no skills of its own.",
   "hooks": "./hooks/hooks.json"
 }
