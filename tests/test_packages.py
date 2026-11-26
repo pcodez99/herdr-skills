@@ -16,7 +16,7 @@ class Packages(unittest.TestCase):
         subprocess.run(["make", "package"], cwd=ROOT, check=True, capture_output=True)
 
     def test_self_contained_packages(self):
-        required = {"LICENSE", "README.md", "PRIVACY.md", "docs/PUBLISHING.md", "assets/icon.png",
+        required = {"LICENSE", "README.md", "PRIVACY.md", "assets/icon.png",
                     "skills/herdr-team/SKILL.md", "skills/herdr-team/TEAMMATE.md",
                     "skills/herdr-team/LIFECYCLE.md", "skills/herdr-team/TROUBLESHOOTING.md"}
         for host, manifest_path in [("codex", "plugin.json"), ("claude", ".claude-plugin/plugin.json")]:

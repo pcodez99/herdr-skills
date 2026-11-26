@@ -84,7 +84,6 @@ The official CLI manuals come from `hc --skill` and `herdr-app --skill`.
 
 - [The skill](skills/herdr-team/SKILL.md) — planning, ownership, gates, and handoffs.
 - [Troubleshooting](skills/herdr-team/TROUBLESHOOTING.md) — when an agent gets stuck.
-- [Publishing](docs/PUBLISHING.md) — checks, ZIPs, and directory submission steps.
 - [Privacy](PRIVACY.md) · [Support](https://github.com/pcodez99/herdr-skills/issues) · [MIT license](LICENSE).
 
 By **[pcodez](https://github.com/pcodez99)**. An independent skill package for Herdr;
