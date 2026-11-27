@@ -17,8 +17,11 @@ fn validate(body: &str) -> Result<()> {
     domain::criteria(body)?;
     domain::require_verifiable(body)?;
     let top = repository::toplevel()?;
-    let wiki = top.canonicalize()?.join(domain::WIKI_ROOT);
+    let canonical = top.canonicalize()?;
     for page in domain::sources(body)? {
+        let root = domain::wiki_root(page).ok_or("Wiki page outside the wiki")?;
+        let wiki = canonical.join(root);
+        let wiki = wiki.canonicalize().unwrap_or(wiki);
         let inside = top
             .join(page)
             .canonicalize()

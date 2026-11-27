@@ -2,6 +2,8 @@
 
 ## 2026-11-27
 
+- `propose` accepts wiki sources in `docs/wiki/` as well as `knowledge/`; skills, hook and [architecture](wiki/architecture.md) updated.
+- `knowledge/` may be a symlink to an existing wiki; [architecture](wiki/architecture.md) states that the snapshot does not hash its target's files.
 - Reviewed wiki against code with two independent reviewers on different models over nine rounds, until both passed on the same tree; the fixes made the engine stricter (undeletable plans and checks, final approval, refused malformed plan lines, wiki sources confined to `knowledge/`, snapshot covering nested repositories) and the [architecture](wiki/architecture.md) exact.
 - Summarised a talk on trusting coding agents in [Agent trust and verification](wiki/agent-trust-and-verification.md); the transcript is third-party and not redistributed.
 - Applied the talk to the project: rules in [AGENTS.md](../AGENTS.md), Clippy `pedantic` and `unsafe_code` lints, [conventions tests](../tests/conventions.rs) for layers, wiki rules and the command map; updated [architecture](wiki/architecture.md) and [Agent trust and verification](wiki/agent-trust-and-verification.md).

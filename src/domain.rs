@@ -22,7 +22,11 @@ pub enum Command {
 pub const INTEGRATION: &str = "integration";
 pub const WIKI: &str = "wiki";
 pub const WIKI_REVIEWERS: i64 = 2;
-pub const WIKI_ROOT: &str = "knowledge/";
+pub const WIKI_ROOTS: [&str; 2] = ["knowledge/", "docs/wiki/"];
+
+pub fn wiki_root(path: &str) -> Option<&'static str> {
+    WIKI_ROOTS.into_iter().find(|root| path.starts_with(root))
+}
 
 pub fn sources(body: &str) -> Result<Vec<&str>> {
     let sources: Vec<_> = body
@@ -31,16 +35,13 @@ pub fn sources(body: &str) -> Result<Vec<&str>> {
         .map(str::trim)
         .collect();
     let valid = |path: &&str| {
-        path.starts_with(WIKI_ROOT)
+        wiki_root(path).is_some()
             && !path
                 .split('/')
                 .any(|part| part.is_empty() || part == "." || part == "..")
     };
     if sources.is_empty() || !sources.iter().all(valid) {
-        return Err(format!(
-            "Build the plan on the wiki: list its pages as '- [wiki] {WIKI_ROOT}wiki/page.md'"
-        )
-        .into());
+        return Err("Build the plan on the wiki: list its pages as '- [wiki] knowledge/wiki/page.md' or '- [wiki] docs/wiki/page.md'".into());
     }
     Ok(sources)
 }
@@ -158,6 +159,11 @@ mod tests {
         assert!(sources("- [R1] No sources").is_err());
         assert!(sources("- [wiki] knowledge/../secret.md").is_err());
         assert!(sources("- [wiki] src/main.rs").is_err());
+        assert!(sources("- [wiki] docs/other.md").is_err());
+        assert_eq!(
+            sources("- [wiki] docs/wiki/db.md").unwrap(),
+            ["docs/wiki/db.md"]
+        );
         assert_eq!(
             sources("- [wiki] knowledge/index.md\r\n- [wiki] knowledge/wiki/db.md").unwrap(),
             ["knowledge/index.md", "knowledge/wiki/db.md"]

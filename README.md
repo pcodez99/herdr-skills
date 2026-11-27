@@ -65,7 +65,7 @@ after adding the links.
 
 > Use herdr-team to plan and implement this task with a team of agents in Herdr.
 
-1. The wiki in `knowledge/` is the source of truth. The master creates it when
+1. The wiki in `knowledge/`, or `docs/wiki/` if the project already has one, is the source of truth. The master creates it when
    missing, following [Open Knowledge Format 0.2](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md).
 2. Interview the dedicated `herdr-grill` agent. Each round saves one checkpoint,
    and the plan cites the wiki pages it is built on. Every criterion states how to

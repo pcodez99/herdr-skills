@@ -47,14 +47,14 @@ Done when every piece of the task has exactly one owner.
 
 ## 2. Wiki, plan and approval
 
-The project's wiki in `knowledge/` is the source of truth. Create it if the project has
+The project's wiki in `knowledge/` (or `docs/wiki/`, if it already exists) is the source of truth. Create it if the project has
 none: [WIKI.md](WIKI.md). Plans are built on it and never stored in it.
 
 Rules the `plans` helper enforces, so no agent has to remember them:
 
 | Rule | Enforced by |
 | --- | --- |
-| A plan cites the wiki pages it is built on | `propose` rejects a plan without `- [wiki] knowledge/…` lines naming existing pages |
+| A plan cites the wiki pages it is built on | `propose` rejects a plan without `- [wiki] knowledge/…` or `- [wiki] docs/wiki/…` lines naming existing pages |
 | Every criterion says how to verify it on the running product | `propose` rejects a criterion without `Verify: …` |
 | A plan's text never changes | database trigger; a change is a new plan |
 | Only the newest plan can be approved, and only the approved one collects evidence | `approve`, `check` |

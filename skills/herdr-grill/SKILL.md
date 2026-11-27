@@ -16,7 +16,7 @@ continuing.
    run `plans start "task title"` and tell the user the returned ID. For a
    resumed interview use `plans list` if needed, confirm the intended session,
    and run `plans resume SESSION`: it returns the latest checkpoint only.
-2. Read the project's wiki in `knowledge/` first: it is the source of truth. Then the
+2. Read the project's wiki in `knowledge/` (or `docs/wiki/`) first: it is the source of truth. Then the
    relevant code. Ask about decisions you cannot
    resolve from those sources. Give a recommendation and explain its trade-off.
    After each round save one complete checkpoint with `plans note SESSION` (UTF-8
@@ -33,7 +33,7 @@ continuing.
    how to run the product and reach each feature, the plan's first criterion adds
    that to the wiki: agents cannot verify what they cannot run.
    List the wiki pages the plan is built on, one per line as
-   `- [wiki] knowledge/wiki/page.md`; `propose` refuses a plan without them. When the
+   `- [wiki] knowledge/wiki/page.md` (or `- [wiki] docs/wiki/page.md`); `propose` refuses a plan without them. When the
    work changes what the wiki says, include the page updates in the plan.
    It prints the plan ID.
 4. Give the master the session and plan IDs. Stay available for clarifications.

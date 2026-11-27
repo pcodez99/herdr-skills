@@ -13,13 +13,15 @@ report into a reproducible path and to verify their work on the running product.
 **Plans never go in the wiki.** Proposals, interview notes and check evidence live in
 the plan database.
 
-The wiki lives in `knowledge/` at the repository root: `knowledge/index.md` carries
-`okf_version` in its frontmatter. The `plans` helper only accepts wiki sources there.
+The wiki lives in `knowledge/` at the repository root, or in `docs/wiki/` when the project
+already keeps its wiki there; the paths below use `knowledge/`. Its `index.md` carries
+`okf_version` in its frontmatter. The `plans` helper only accepts wiki sources in one of
+those two folders.
 
 ## Create it when missing
 
 Write the wiki in the language of the project's documentation. Create it under
-`knowledge/`, add one line pointing to it in the project's `AGENTS.md` or `CLAUDE.md`
+`knowledge/` unless `docs/wiki/` already exists, add one line pointing to it in the project's `AGENTS.md` or `CLAUDE.md`
 (creating `AGENTS.md` if neither exists), and tell the user. They decide when to commit it.
 
 ```text

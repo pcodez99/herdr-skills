@@ -7,7 +7,7 @@ and commits; you own one perimeter of a shared working tree.
    with the `plans show` command from your launch prompt, and the source needed for
    your criteria. If the plan or scope is missing, report a blocker. `plans show` for
    your plan is the only `plans` command you run: no drafts, history or other plans.
-   As a **wiki reviewer**: read the whole wiki in `knowledge/` and the implementation,
+   As a **wiki reviewer**: read the whole wiki in `knowledge/` (or `docs/wiki/`) and the implementation,
    on your own, and compare them, running the product to check claims about behaviour.
    Record the outcome yourself with
    `plans check PLAN wiki pass` or `fail`, listing every discrepancy (page, claim, code

@@ -182,6 +182,11 @@ fn full_plan_cycle_with_rework() {
     f.fails(&["propose", &s], plan!("- [R1] x\n- [R1] y"));
     f.fails(&["propose", &s], plan!("- [R0] x"));
     f.fails(&["propose", &s], plan!("- [R1] No way to check it"));
+    let docs_plan = b"- [wiki] docs/wiki/page.md\n- [R1] x. Verify: run";
+    f.fails(&["propose", &s], docs_plan);
+    fs::create_dir_all(f.repo.join("docs/wiki")).unwrap();
+    fs::write(f.repo.join("docs/wiki/page.md"), "# Page\n").unwrap();
+    f.with(&["propose", &s], docs_plan);
     let first = f.with(&["propose", &s], plan!("- [R1] Earlier. Verify: run it"));
     let plan = f.with(&["propose", &s], SPEC);
     assert_eq!(f.run(&["show", &plan], b"", 0), SPEC);
