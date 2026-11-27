@@ -11,4 +11,5 @@ skills/herdr-app/
 *.key
 temp/
 dist/
-__pycache__/
+/target/
+/skills/herdr-grill/bin/

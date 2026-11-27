@@ -8,5 +8,5 @@
 | zsh prints `parse error` after `hc send <t> …`     | The tab hosted an agent before, so the text arrives wrapped in `<hc from=…>` tags. Open a fresh tab with `tab.new --argv`. |
 | `command not found` in an `hc run` terminal        | A terminal started with a command skips the login profile. Wrap it: `hc run "zsh -lc '<command>'"`.                        |
 | A whole test suite fails while another agent tests | A collision on the shared tree or test database. Rerun when the other agent is idle.                                       |
-| Checks fail in a perimeter you do not own          | Usually another agent's step in progress. Check the status table and log, then tell the master.                            |
-| You lost track of the team                         | The team table in the master plan, then `hc ls` and `herdr-app ls`.                                                        |
+| Checks fail in a perimeter you do not own          | Usually another agent's step in progress. Tell the master which criterion failed and include the check output.                            |
+| You lost track of the team                         | Master: resume the exact session, then inspect `hc ls` and `herdr-app ls`.                                                        |

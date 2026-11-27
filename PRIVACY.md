@@ -1,11 +1,13 @@
 # Privacy
 
-Herdr Team by pcodez is an independent package of agent instructions and a local
-Claude Code session-start hook. It has no hosted backend, analytics, telemetry,
-tracking cookies, or publisher-operated data store.
+Herdr Team by pcodez is an independent package of agent instructions, a local
+planning executable and a Claude Code session-start hook. It has no hosted
+backend, analytics, telemetry, tracking cookies, or publisher-operated data store.
 
 The hook reads `HC_TERMINAL_ID` and prints instructions into the current agent
 session. It does not send that value to pcodez or make network requests.
+
+The local SQLite database retains interview checkpoints, proposals and evidence outside the project checkout until you remove it. Same-account tools with filesystem access can read it. Only include information appropriate for your agent provider and project wiki.
 
 When you use the skill, your agent can read project files, run local commands,
 start other agents, and exchange task context through Herdr. Project context and

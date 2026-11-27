@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "herdr",
-      "description": "Coordinate a visible team of agents in Herdr desktop. Includes the herdr-team skill and a session-start hook.",
+      "description": "Coordinate a visible team of agents in Herdr desktop. Includes resumable planning interviews, approved wiki plans and verification by the team master.",
       "source": "./",
       "category": "productivity"
     }
