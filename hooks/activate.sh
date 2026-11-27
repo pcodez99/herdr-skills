@@ -1,5 +1,4 @@
 #!/bin/sh
-# SessionStart hook: stdout becomes session context. Silent outside Herdr.
 [ -n "${HC_TERMINAL_ID:-}" ] || exit 0
 
 cat <<EOF

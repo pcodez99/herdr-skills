@@ -24,7 +24,6 @@ fn git(args: &[&str]) -> Result<Vec<u8>> {
     Ok(result.stdout)
 }
 
-// Resolve existing symlinks before interpreting '..', including in missing suffixes.
 fn resolve(path: &Path, depth: usize) -> Result<PathBuf> {
     if depth > 40 {
         return Err("Too many levels of symbolic links".into());
@@ -76,7 +75,6 @@ pub fn database() -> Result<PathBuf> {
     if protected.iter().any(|p| folder.starts_with(p)) {
         return Err(outside.into());
     }
-    // Paths with different spellings can name the same directory on case-insensitive filesystems.
     let identities = protected
         .iter()
         .map(|p| directory_identity(p))
@@ -114,10 +112,11 @@ pub fn toplevel() -> Result<PathBuf> {
     git_path(&["rev-parse", "--show-toplevel"])
 }
 
-/// SHA-256 of the working tree as Git sees it: tracked and untracked files, ignored
-/// ones excluded. Any byte changed in code or wiki yields a different snapshot.
 pub fn snapshot() -> Result<String> {
-    let top = toplevel()?;
+    tree(&toplevel()?)
+}
+
+fn tree(top: &Path) -> Result<String> {
     let listed = Command::new("git")
         .args([
             "ls-files",
@@ -126,7 +125,7 @@ pub fn snapshot() -> Result<String> {
             "--exclude-standard",
             "-z",
         ])
-        .current_dir(&top)
+        .current_dir(top)
         .stderr(Stdio::inherit())
         .output()?;
     if !listed.status.success() {
@@ -148,11 +147,11 @@ pub fn snapshot() -> Result<String> {
                 if m.mode() & 0o111 != 0 { b"x" } else { b"f" },
                 fs::read(&path)?,
             ),
+            Ok(_) if path.join(".git").exists() => (b"d", tree(&path)?.into_bytes()),
             Ok(_) => (b"d", Vec::new()),
             Err(e) if e.kind() == ErrorKind::NotFound => (b"-", Vec::new()),
             Err(e) => return Err(e.into()),
         };
-        // Length prefixes keep path and content boundaries unambiguous.
         for part in [name, kind, &content] {
             hash.update((part.len() as u64).to_le_bytes());
             hash.update(part);

@@ -59,7 +59,7 @@ fn parse() -> Result<Option<Command>> {
         .trim_end()
         .to_owned();
     let names: Vec<_> = params.split_whitespace().collect();
-    let mut args: Vec<OsString> = Vec::new();
+    let mut values: Vec<OsString> = Vec::new();
     let mut options = true;
     for arg in argv {
         if options && arg == "--" {
@@ -73,15 +73,19 @@ fn parse() -> Result<Option<Command>> {
                 &format!("unknown option '{}'", arg.to_string_lossy()),
             )
         } else {
-            args.push(arg);
+            values.push(arg);
         }
     }
-    if args.len() != names.len() {
+    if values.len() != names.len() {
         invalid(&usage, &format!("expected {} argument(s)", names.len()))
     }
-    let text = |i: usize| args[i].to_str().ok_or("Expected valid UTF-8 argument");
+    let text = |i: usize| {
+        values[i]
+            .to_str()
+            .unwrap_or_else(|| invalid(&usage, "arguments must be valid UTF-8"))
+    };
     let id = |i: usize| -> Result<i64> {
-        let value = text(i)?;
+        let value = text(i);
         match value.parse() {
             Ok(id) => Ok(id),
             Err(_) => invalid(
@@ -91,7 +95,7 @@ fn parse() -> Result<Option<Command>> {
         }
     };
     Ok(Some(match cmd {
-        "start" => Command::Start(text(0)?.into()),
+        "start" => Command::Start(text(0).into()),
         "list" => Command::List,
         "resume" => Command::Resume(id(0)?),
         "note" => Command::Note(id(0)?, body()?),
@@ -100,7 +104,7 @@ fn parse() -> Result<Option<Command>> {
         "status" => Command::Status(id(0)?),
         "approve" => Command::Approve(id(0)?),
         "check" => {
-            let result = text(2)?;
+            let result = text(2);
             if !matches!(result, "pass" | "fail") {
                 invalid(
                     &usage,
@@ -109,7 +113,7 @@ fn parse() -> Result<Option<Command>> {
             }
             Command::Check {
                 plan: id(0)?,
-                criterion: text(1)?.into(),
+                criterion: text(1).into(),
                 result: result.into(),
                 evidence: body()?,
             }

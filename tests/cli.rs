@@ -9,21 +9,18 @@ use std::{
 };
 use tempfile::TempDir;
 
-const SPEC: &[u8] = b"# Revisione \xc3\xa8\r\n\r\n- [wiki] knowledge/index.md\r\n- [R1] A result  \r\n- [R2] Another result\n";
+const SPEC: &[u8] = b"# Revisione \xc3\xa8\r\n\r\n- [wiki] knowledge/index.md\r\n- [R1] A result. Verify: run it  \r\n- [R2] Another result. Verify: run it\n";
 const MASTER: &str = "t-master";
 
-/// A plan body built on the fixture's wiki.
 macro_rules! plan {
     ($criteria:literal) => {
         concat!("- [wiki] knowledge/index.md\n", $criteria).as_bytes()
     };
 }
 
-// `make check-package` points PLANS_BIN at the launcher inside the extracted ZIP.
 fn plans_bin() -> PathBuf {
     std::env::var_os("PLANS_BIN")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| env!("CARGO_BIN_EXE_herdr-plans").into())
+        .map_or_else(|| env!("CARGO_BIN_EXE_herdr-plans").into(), PathBuf::from)
 }
 
 fn git(dir: &Path, args: &[&str]) {
@@ -105,7 +102,7 @@ impl Fixture {
             String::from_utf8_lossy(&out.stderr)
         );
         if code == 0 {
-            assert!(out.stderr.is_empty());
+            assert_eq!(String::from_utf8_lossy(&out.stderr), "");
         } else {
             assert!(out.stdout.is_empty() && !out.stderr.is_empty());
         }
@@ -130,7 +127,6 @@ impl Fixture {
         self.run(args, body, 1);
     }
 
-    /// A wiki review from another agent's terminal; returns the exit code.
     fn review(&self, terminal: &str, plan: &str, result: &str) -> Option<i32> {
         let args = ["check", plan, "wiki", result];
         let out = self.exec_as(
@@ -148,7 +144,6 @@ impl Fixture {
         serde_json::from_str(&self.ok(args)).unwrap()
     }
 
-    /// Direct database access, for assertions no command exposes.
     fn db(&self) -> rusqlite::Connection {
         let folder = fs::read_dir(self.state.join("herdr-team"))
             .unwrap()
@@ -186,7 +181,8 @@ fn full_plan_cycle_with_rework() {
     f.with(&["note", &s], b"Checkpoint \xc3\xa8\r\n");
     f.fails(&["propose", &s], plan!("- [R1] x\n- [R1] y"));
     f.fails(&["propose", &s], plan!("- [R0] x"));
-    let first = f.with(&["propose", &s], plan!("- [R1] Earlier"));
+    f.fails(&["propose", &s], plan!("- [R1] No way to check it"));
+    let first = f.with(&["propose", &s], plan!("- [R1] Earlier. Verify: run it"));
     let plan = f.with(&["propose", &s], SPEC);
     assert_eq!(f.run(&["show", &plan], b"", 0), SPEC);
     f.fails(&["show", "999"], b"");
@@ -237,8 +233,8 @@ fn outputs_never_mix_plans_or_replay_history() {
     f.with(&["note", &a], b"A round 1");
     f.with(&["note", &a], b"A round 2");
     f.with(&["note", &b], b"B secret");
-    let plan_a = f.with(&["propose", &a], plan!("- [R1] Body of A"));
-    f.with(&["propose", &b], plan!("- [R1] Body of B"));
+    let plan_a = f.with(&["propose", &a], plan!("- [R1] Body of A. Verify: run it"));
+    f.with(&["propose", &b], plan!("- [R1] Body of B. Verify: run it"));
     let resume = f.ok(&["resume", &a]);
     assert!(resume.contains("A round 2"));
     for leak in ["A round 1", "B secret", "Body of"] {
@@ -250,7 +246,7 @@ fn outputs_never_mix_plans_or_replay_history() {
         assert!(!list.contains(leak), "{leak} leaked into list");
     }
     let show = f.ok(&["show", &plan_a]);
-    assert_eq!(show.as_bytes(), plan!("- [R1] Body of A"));
+    assert_eq!(show.as_bytes(), plan!("- [R1] Body of A. Verify: run it"));
     f.ok(&["approve", &plan_a]);
     f.with(&["check", &plan_a, "R1", "pass"], b"Evidence text");
     assert!(!f.ok(&["status", &plan_a]).contains("Evidence text"));
@@ -260,10 +256,9 @@ fn outputs_never_mix_plans_or_replay_history() {
 fn a_newer_approved_plan_replaces_the_active_one() {
     let f = Fixture::new();
     let s = f.ok(&["start", "Rework"]);
-    let old = f.with(&["propose", &s], plan!("- [R1] Old"));
+    let old = f.with(&["propose", &s], plan!("- [R1] Old. Verify: run it"));
     f.ok(&["approve", &old]);
-    let new = f.with(&["propose", &s], plan!("- [R1] New"));
-    // Until the new plan is approved, evidence still belongs to the old one.
+    let new = f.with(&["propose", &s], plan!("- [R1] New. Verify: run it"));
     f.with(&["check", &old, "R1", "pass"], b"ok");
     f.fails(&["check", &new, "R1", "pass"], b"ok");
     f.ok(&["approve", &new]);
@@ -371,7 +366,7 @@ fn empty_xdg_falls_back_to_private_home_state() {
 #[test]
 fn launcher_resolves_a_linked_skill() {
     if std::env::var_os("PLANS_BIN").is_some() {
-        return; // The package check runs through the launcher already.
+        return;
     }
     let f = Fixture::new();
     let skill = f.base.join("install/skills/herdr-grill");
@@ -400,14 +395,13 @@ fn launcher_resolves_a_linked_skill() {
 fn any_change_after_review_reopens_the_wiki_loop() {
     let f = Fixture::new();
     let s = f.ok(&["start", "Loop"]);
-    let plan = f.with(&["propose", &s], plan!("- [R1] Done"));
+    let plan = f.with(&["propose", &s], plan!("- [R1] Done. Verify: run it"));
     f.ok(&["approve", &plan]);
     f.with(&["check", &plan, "R1", "pass"], b"ok");
     f.with(&["check", &plan, "integration", "pass"], b"ok");
     assert_eq!(f.review("t-a", &plan, "pass"), Some(0));
     assert_eq!(f.review("t-b", &plan, "fail"), Some(0));
     f.fails(&["finish", &plan], b"");
-    // The fix changes the tree: earlier reviews no longer count.
     fs::write(
         f.repo.join("knowledge/index.md"),
         "---\nokf_version: '0.2'\n---\n# Fixed\n",
@@ -428,4 +422,37 @@ fn any_change_after_review_reopens_the_wiki_loop() {
     f.fails(&["finish", &plan], b"");
     fs::remove_file(f.repo.join("untracked.txt")).unwrap();
     f.ok(&["finish", &plan]);
+}
+
+#[test]
+fn edits_inside_nested_repositories_change_the_snapshot() {
+    let f = Fixture::new();
+    let s = f.ok(&["start", "Nested"]);
+    let plan = f.with(&["propose", &s], plan!("- [R1] Done. Verify: run it"));
+    let nested = f.repo.join("nested");
+    fs::create_dir(&nested).unwrap();
+    git(&nested, &["init", "-q"]);
+    fs::write(nested.join("f"), "one").unwrap();
+    let snapshot = || f.json(&["status", &plan])["wiki"]["snapshot"].clone();
+    let before = snapshot();
+    fs::write(nested.join("f"), "two").unwrap();
+    assert_ne!(snapshot(), before);
+}
+
+#[test]
+fn an_uninitialised_submodule_does_not_break_the_snapshot() {
+    let f = Fixture::new();
+    let s = f.ok(&["start", "Submodule"]);
+    let plan = f.with(&["propose", &s], plan!("- [R1] Done. Verify: run it"));
+    git(
+        &f.repo,
+        &[
+            "update-index",
+            "--add",
+            "--cacheinfo",
+            "160000,1111111111111111111111111111111111111111,module",
+        ],
+    );
+    fs::create_dir(f.repo.join("module")).unwrap();
+    assert!(f.json(&["status", &plan])["wiki"]["snapshot"].is_string());
 }

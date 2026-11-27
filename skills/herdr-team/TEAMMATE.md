@@ -8,13 +8,18 @@ and commits; you own one perimeter of a shared working tree.
    your criteria. If the plan or scope is missing, report a blocker. `plans show` for
    your plan is the only `plans` command you run: no drafts, history or other plans.
    As a **wiki reviewer**: read the whole wiki in `knowledge/` and the implementation,
-   on your own, and compare them. Record the outcome yourself with
+   on your own, and compare them, running the product to check claims about behaviour.
+   Record the outcome yourself with
    `plans check PLAN wiki pass` or `fail`, listing every discrepancy (page, claim, code
    path) on stdin. That is the one other `plans` command you run. Change no files.
-2. Work within the assigned paths and contracts. Report ambiguities or necessary
+2. Read the code before naming a cause, and reproduce it before calling it the cause.
+   Check an API in its source or `--help` instead of guessing. Follow the conventions
+   the codebase already has: copy the nearest correct pattern.
+   Work within the assigned paths and contracts. Report ambiguities or necessary
    contract changes to the master before proceeding.
-3. Run the checks for your criteria and send the master the plan ID, criterion
-   IDs, changed paths, commands and results. Keep planning files out of the checkout.
+3. Close the loop yourself: run each of your criteria's `Verify:` on the real product
+   and fix until it passes. Send the master the plan ID, criterion IDs, changed paths,
+   the commands you ran and their output; never report a check you did not run. Keep planning files out of the checkout.
 4. **Report and stop:**
 
    ```sh

@@ -6,7 +6,10 @@ for context and the master keeps current. It follows
 
 The wiki is the **source of truth**: plans are built on it, and the work is done only
 when code and wiki say the same thing. It holds durable knowledge: architecture,
-decisions and why they were made, conventions, how to build, test and deploy.
+decisions and why they were made, conventions, how to build, test and deploy, and a
+**feature map**: every feature, how to run the product and reach it (command, URL, UI
+path, shortcut, selector), its code and its tests. Agents use the map to turn a vague
+report into a reproducible path and to verify their work on the running product.
 **Plans never go in the wiki.** Proposals, interview notes and check evidence live in
 the plan database.
 
@@ -71,10 +74,10 @@ generated: { by: <agent>/<model>, at: '<ISO 8601 UTC>' }
 # Wiki rules
 
 - `raw/` keeps sources as acquired; a new version is a new file. `wiki/` holds pages.
-- Every page except `index.md` and `log.md` starts with YAML frontmatter: `type`
+- Every page except the indexes (`index.md`, `raw/index.md`) and `log.md` starts with YAML frontmatter: `type`
   (required), `title`, `description` (one line), `status` (`draft`, `stable` or
   `deprecated`), `generated: { by, at }` and `sources`, a list of `{ resource, id }`
-  where `resource` is a URL or a path in this wiki.
+  where `resource` is a URL or a relative path (a page may cite code).
 - Add `verified: { by, at }` only after checking the content against its sources.
   Actors: `<agent>/<version>`, `human:<id>` or `process:<id>`.
 - Use relative Markdown links and kebab-case file names.
@@ -91,5 +94,5 @@ Create `raw/` and `wiki/` when the first file goes in them.
 
 Wiki updates are part of the work, not an afterthought: when a plan changes
 architecture, decisions, commands or conventions, its owner updates the pages
-concerned, the index and the log in the same step as the code, citing paths as sources.
+concerned, the feature map, the index and the log in the same step as the code, citing paths as sources.
 The review loop then checks that code and wiki agree before `plans finish` can pass.

@@ -68,11 +68,13 @@ after adding the links.
 1. The wiki in `knowledge/` is the source of truth. The master creates it when
    missing, following [Open Knowledge Format 0.2](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md).
 2. Interview the dedicated `herdr-grill` agent. Each round saves one checkpoint,
-   and the plan cites the wiki pages it is built on.
+   and the plan cites the wiki pages it is built on. Every criterion states how to
+   verify it on the running product.
 3. Approve the exact plan shown by the master. It assigns criteria to agents in
    fresh tabs, and each agent reads only the approved plan.
-4. Implementers update code and wiki together. The master checks each criterion
-   and the integration, sending failures back for correction.
+4. Implementers update code and wiki together and verify their own criteria on the
+   running product. The master re-runs each verification and the integration,
+   sending failures back for correction.
 5. Two fresh reviewers compare wiki and code independently. Any discrepancy goes
    back to its owner and the loop restarts with new reviewers. `plans finish`
    closes the plan only when both pass on the current tree.
@@ -88,8 +90,8 @@ No command replays history, so a new agent session starts with a clean context.
 Each repository has its own SQLite database outside the checkout, at
 `${XDG_STATE_HOME:-$HOME/.local/state}/herdr-team/<repo-key>/herdr.sqlite3`, with
 `STRICT` tables `sessions`, `notes`, `plans` and `checks`, a `plan_status` view,
-WAL, foreign keys and UTC ISO 8601 timestamps. Triggers keep plan texts and checks
-immutable. The [diagram](docs/herdr.drawio) shows the flow and the schema.
+WAL, foreign keys and UTC ISO 8601 timestamps. Triggers keep checks append-only and plans undeletable, with fixed text and final
+approval and verification. The [diagram](docs/herdr.drawio) shows the flow and the schema.
 Linked worktrees share the database through the canonical Git common directory;
 a separate clone gets its own. Plans stay out of the wiki and the repository.
 

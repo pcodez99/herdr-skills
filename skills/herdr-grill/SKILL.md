@@ -25,7 +25,13 @@ continuing.
    Do not save secrets. Never ask settled questions again.
 3. When the user finishes, send clean Markdown to `plans propose SESSION` on
    stdin. Include the goal, ownership, dependencies, constraints, excluded scope,
-   and testable criteria, one per line in the form `- [R1] Observable outcome`.
+   and testable criteria, one per line in the form
+   `- [R1] Observable outcome. Verify: command or steps`, at the start of the line;
+   mention criteria elsewhere without brackets. The verification runs the
+   real product (the CLI, the app in a browser or simulator, the endpoint), not just
+   reads the diff; `propose` refuses a criterion without it. If the wiki does not say
+   how to run the product and reach each feature, the plan's first criterion adds
+   that to the wiki: agents cannot verify what they cannot run.
    List the wiki pages the plan is built on, one per line as
    `- [wiki] knowledge/wiki/page.md`; `propose` refuses a plan without them. When the
    work changes what the wiki says, include the page updates in the plan.

@@ -34,7 +34,6 @@ package:
 		zip -q $(ZIP) $(FILES) && \
 		(cd "$$stage" && zip -q "$(CURDIR)/$(ZIP)" "$(ARCHIVE_BIN)")
 
-# Runs the CLI tests through the launcher of the extracted ZIP, with only Git on PATH.
 check-package: package
 	@dir=$$(mktemp -d) && trap 'rm -rf "$$dir"' EXIT && \
 		unzip -q $(ZIP) -d "$$dir/pkg" && \

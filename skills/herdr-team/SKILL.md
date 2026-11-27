@@ -29,6 +29,10 @@ each further piece that:
 - repays a cold start: each agent boots without your context and adds one more output
   for you to review.
 
+Scale only as far as verification reaches: more agents than you can check is
+wasted work. If the project has no way to run and check the product, one implementer
+builds that first.
+
 Count perimeters, not files: thirty identical edits in one package are one piece. A
 reviewer, a test writer or a researcher joins when the task calls for one, alongside the
 implementer.
@@ -51,10 +55,11 @@ Rules the `plans` helper enforces, so no agent has to remember them:
 | Rule | Enforced by |
 | --- | --- |
 | A plan cites the wiki pages it is built on | `propose` rejects a plan without `- [wiki] knowledge/…` lines naming existing pages |
+| Every criterion says how to verify it on the running product | `propose` rejects a criterion without `Verify: …` |
 | A plan's text never changes | database trigger; a change is a new plan |
 | Only the newest plan can be approved, and only the approved one collects evidence | `approve`, `check` |
 | Code and wiki agree | `finish` needs 2 `wiki` passes from distinct reviewer terminals, not the approving master's, on the current working tree, and no failure on it |
-| Any later edit reopens the review | each `wiki` check stores a hash of the working tree; a changed byte invalidates it |
+| Any later edit reopens the review | each `wiki` check stores a hash of the working tree; any change the snapshot covers (tracked files, untracked non-ignored files, the executable bit) invalidates it |
 
 Load the bundled `herdr-grill` skill. From the target Git worktree use its
 `plans` helper: one SQLite database per repository, outside the checkout, with the
@@ -101,8 +106,9 @@ they own, so `herdr-app ls` is the team roster; the plan database holds no roste
 - Wait on addresses with `hc wait <t>`: tabs opened by `herdr-app` are not your `hc`
   children. Reports arrive as `<hc from="…">` input reading
   `<agent>: <step> done - …` or `<agent>: <step> blocked - …`.
-- Verify each assigned criterion independently against the approved plan, code diff
-  and observed behavior. Run its check. Send the actual command, result and relevant
+- Verify each criterion independently by running its `Verify:` on the real product, as
+  the implementer did before reporting. Reading the diff is not evidence; observed
+  behaviour is. Send the actual command, result and relevant
   paths on stdin to `plans check PLAN R1 pass` or `fail`.
   On failure return the criterion, expected and actual result to the owner, then
   rerun the check after correction. Escalate unresolved blockers to the user.
@@ -116,7 +122,8 @@ they own, so `herdr-app ls` is the team roster; the plan database holds no roste
 ## 5. Gate and commit
 
 At each gate, run its checks yourself, then ask the user before you commit. Commits and
-pushes are theirs to authorise.
+pushes are theirs to authorise. Keep commits small and atomic: one concern each, code and
+wiki together, so history stays readable context and any revert is clean.
 
 ## 6. Close the loop
 
@@ -125,16 +132,20 @@ pushes are theirs to authorise.
    `plans check PLAN integration pass` or `fail`.
 2. **Wiki review loop.** Open two fresh reviewer tabs that took no part in the work,
    each with its own context. Each one compares the whole wiki with the implementation,
-   independently of the other, and records `plans check PLAN wiki pass` or `fail` from
+   independently of the other, and checks behavioural claims by running the product as
+   the wiki says. Launch at least one on a different model from the implementers when one
+   is available: a different judge catches different mistakes. Each records `plans check PLAN wiki pass` or `fail` from
    its own terminal, listing every discrepancy as evidence.
    Any failure: send the discrepancies to the owner, who fixes the code (or the wiki,
    where the plan changed the intended behaviour). Close the reviewer tabs and open
    two fresh ones on the new tree. Repeat until `plans status PLAN` shows
-   `"passed_by": 2, "failed": 0`. Then run `plans finish PLAN`: it re-hashes the tree
+   `passed_by` 2 and `failed` 0 in its `wiki` object. Then run `plans finish PLAN`: it re-hashes the tree
    and refuses if anything changed since the reviews.
 3. Report: the team, steps, gates and commits, check results, review rounds, what is
-   unverified or open.
-3. Once the user accepts, close the tabs you created ([LIFECYCLE.md](LIFECYCLE.md)).
+   unverified or open. A failure or review remark seen twice is a missing hard check:
+   propose the lint, test or CI rule that would have caught it, or the design change
+   that removes it.
+4. Once the user accepts, close the tabs you created ([LIFECYCLE.md](LIFECYCLE.md)).
    Everything you did not create stays as it is.
 
 When something misbehaves: [TROUBLESHOOTING.md](TROUBLESHOOTING.md).

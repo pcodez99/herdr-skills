@@ -19,17 +19,11 @@ pub enum Command {
     Finish(i64),
 }
 
-/// Checks every plan needs besides its own criteria: the combined result, and
-/// agreement between implementation and wiki confirmed by independent reviewers.
 pub const INTEGRATION: &str = "integration";
 pub const WIKI: &str = "wiki";
-/// Distinct reviewer terminals, other than the approving master's, that must pass
-/// the wiki check on the same working-tree snapshot.
 pub const WIKI_REVIEWERS: i64 = 2;
-/// Every wiki page a plan is built on lives under this folder.
 pub const WIKI_ROOT: &str = "knowledge/";
 
-/// Wiki pages a plan is built on, declared as `- [wiki] knowledge/wiki/page.md`.
 pub fn sources(body: &str) -> Result<Vec<&str>> {
     let sources: Vec<_> = body
         .lines()
@@ -51,24 +45,21 @@ pub fn sources(body: &str) -> Result<Vec<&str>> {
     Ok(sources)
 }
 
-/// Acceptance criteria declared as `- [R1] Expected result`, one per line.
+fn criterion(line: &str) -> Option<(&str, &str)> {
+    let (id, text) = line.strip_prefix("- [")?.split_once("] ")?;
+    let number = id.strip_prefix('R')?;
+    let valid = !number.is_empty()
+        && !number.starts_with('0')
+        && number.bytes().all(|b| b.is_ascii_digit())
+        && text.starts_with(|c: char| !c.is_whitespace());
+    valid.then_some((id, text))
+}
+
 pub fn criteria(body: &str) -> Result<BTreeSet<&str>> {
-    const ERROR: &str = "Use unique acceptance criteria such as '- [R1] Expected result'";
+    const ERROR: &str =
+        "Use unique acceptance criteria such as '- [R1] Expected result. Verify: how to check it'";
     let mut ids = BTreeSet::new();
-    for line in body.split('\n') {
-        let Some((id, text)) = line.strip_prefix("- [").and_then(|s| s.split_once("] ")) else {
-            continue;
-        };
-        let Some(number) = id.strip_prefix('R') else {
-            continue;
-        };
-        if number.is_empty()
-            || number.starts_with('0')
-            || !number.bytes().all(|b| b.is_ascii_digit())
-            || !text.starts_with(|c: char| !c.is_whitespace())
-        {
-            continue;
-        }
+    for (id, _) in body.split('\n').filter_map(criterion) {
         if !ids.insert(id) {
             return Err(ERROR.into());
         }
@@ -77,6 +68,45 @@ pub fn criteria(body: &str) -> Result<BTreeSet<&str>> {
         return Err(ERROR.into());
     }
     Ok(ids)
+}
+
+fn has_marker(line: &str) -> bool {
+    line.split('[').skip(1).any(|rest| {
+        let rest = rest.trim_start();
+        let wiki = rest
+            .get(..4)
+            .is_some_and(|word| word.eq_ignore_ascii_case("wiki"))
+            && rest[4..].trim_start().starts_with(']');
+        let criterion = rest.strip_prefix(['R', 'r']).is_some_and(|tail| {
+            tail.trim_start()
+                .starts_with(|c: char| c.is_ascii_digit() || c == ']')
+        });
+        wiki || criterion
+    })
+}
+
+pub fn require_verifiable(body: &str) -> Result<()> {
+    for line in body.split('\n') {
+        if has_marker(line) && criterion(line).is_none() && !line.starts_with("- [wiki] ") {
+            return Err(format!(
+                "Malformed plan line '{}': criteria are '- [R1] Outcome. Verify: command or steps' and sources '- [wiki] knowledge/page.md', each at the start of its line; mention criteria elsewhere without brackets",
+                line.trim()
+            )
+            .into());
+        }
+    }
+    for (id, text) in body.split('\n').filter_map(criterion) {
+        let stated = text
+            .split_once("Verify:")
+            .is_some_and(|(outcome, how)| !outcome.trim().is_empty() && !how.trim().is_empty());
+        if !stated {
+            return Err(format!(
+                "{id}: state how to check it on the running product, as '- [{id}] Outcome. Verify: command or steps'"
+            )
+            .into());
+        }
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -91,6 +121,36 @@ mod tests {
             criteria("preamble\r\n- [R2] Test\r\n- [R10] Review").unwrap(),
             BTreeSet::from(["R2", "R10"])
         );
+    }
+
+    #[test]
+    fn every_criterion_states_its_verification() {
+        assert!(require_verifiable("- [R1] Works. Verify: make check").is_ok());
+        assert!(require_verifiable("- [R1] Works").is_err());
+        assert!(require_verifiable("- [R1] Works. Verify:  ").is_err());
+        assert!(require_verifiable("- [R1] Verify: make check").is_err());
+        for malformed in [
+            "- [R0] x",
+            "- [R01] x",
+            "- [R2]  x",
+            "- [r3] x",
+            "  - [R4] x",
+            "- [R5]x",
+            "* [R6] x",
+            "- [R] x",
+            "- [ R7] x",
+            "[R8] x",
+            "1. [R9] x",
+            "> - [R10] x",
+            "* [wiki] knowledge/x.md",
+            "  - [wiki] knowledge/x.md",
+            "- [WIKI] knowledge/x.md",
+            "See [R2] first",
+        ] {
+            let body = format!("- [R1] Works. Verify: run\n{malformed}. Verify: run");
+            assert!(require_verifiable(&body).is_err(), "{malformed}");
+        }
+        assert!(require_verifiable("- [R1] Works. Verify: run\n- [README](README.md)").is_ok());
     }
 
     #[test]

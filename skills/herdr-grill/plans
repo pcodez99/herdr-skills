@@ -1,5 +1,4 @@
 #!/bin/sh
-# Run the packaged herdr-plans, or a local build when this skill lives in the source checkout.
 skill=$(cd "${0%/*}" && pwd -P) || exit 1
 for bin in "$skill/bin/herdr-plans" "$skill/../../target/debug/herdr-plans" "$skill/../../target/release/herdr-plans"; do
 	[ -x "$bin" ] && exec "$bin" "$@"

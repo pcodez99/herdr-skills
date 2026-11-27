@@ -13,15 +13,26 @@ pub enum Outcome {
     Silent,
 }
 
+fn validate(body: &str) -> Result<()> {
+    domain::criteria(body)?;
+    domain::require_verifiable(body)?;
+    let top = repository::toplevel()?;
+    let wiki = top.canonicalize()?.join(domain::WIKI_ROOT);
+    for page in domain::sources(body)? {
+        let inside = top
+            .join(page)
+            .canonicalize()
+            .is_ok_and(|path| path.is_file() && path.starts_with(&wiki));
+        if !inside {
+            return Err(format!("Wiki page not found: {page}").into());
+        }
+    }
+    Ok(())
+}
+
 pub fn execute(command: Command) -> Result<Outcome> {
     if let Command::Propose(_, body) = &command {
-        domain::criteria(body)?;
-        let top = repository::toplevel()?;
-        for page in domain::sources(body)? {
-            if !top.join(page).is_file() {
-                return Err(format!("Wiki page not found: {page}").into());
-            }
-        }
+        validate(body)?;
     }
     let mut db = storage::open(&repository::database()?)?;
     let tx = storage::begin(&mut db)?;
@@ -68,7 +79,6 @@ pub fn execute(command: Command) -> Result<Outcome> {
             let plan = active(&tx, id)?;
             let reviewer = terminal()?;
             let snapshot = if criterion == WIKI {
-                // Independence is structural: the approving master cannot review.
                 if plan.approver.as_deref() == Some(reviewer.as_str()) {
                     return Err(
                         "The wiki review must come from an agent other than the master".into(),
@@ -118,7 +128,6 @@ pub fn execute(command: Command) -> Result<Outcome> {
     Ok(outcome)
 }
 
-/// The plan's own criteria plus the integration check every plan needs.
 fn criteria(plan: &Plan) -> Result<Vec<&str>> {
     Ok(domain::criteria(&plan.body)?
         .into_iter()
@@ -126,7 +135,6 @@ fn criteria(plan: &Plan) -> Result<Vec<&str>> {
         .collect())
 }
 
-/// The Herdr terminal running this command identifies who approves or reviews.
 fn terminal() -> Result<String> {
     env::var("HC_TERMINAL_ID")
         .ok()
@@ -134,7 +142,6 @@ fn terminal() -> Result<String> {
         .ok_or_else(|| "Run inside a Herdr terminal: HC_TERMINAL_ID identifies the agent".into())
 }
 
-/// Evidence is recorded only against the session's approved, still open plan.
 fn active(tx: &Transaction, id: i64) -> Result<Plan> {
     let plan = storage::plan(tx, id)?;
     match plan.status.as_str() {
